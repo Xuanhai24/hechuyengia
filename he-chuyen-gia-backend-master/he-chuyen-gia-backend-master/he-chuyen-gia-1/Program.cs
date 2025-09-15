@@ -22,7 +22,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddJwtAuth(builder.Configuration);
 
 // Prolog
-builder.Services.AddSingleton<PrologService>();
+builder.Services.AddHttpClient<PrologService>();
 
 // Swagger + Bearer
 builder.Services.AddEndpointsApiExplorer();

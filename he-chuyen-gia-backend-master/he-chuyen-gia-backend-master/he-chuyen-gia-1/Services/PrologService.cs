@@ -1,46 +1,31 @@
-﻿// Services/PrologService.cs
-using SbsSW.SwiPlCs;
-using System;
+﻿using hechuyengia.Models.DiseaseDiagnose;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 
-namespace hechuyengia.Services
+public class PrologService
 {
-    public class PrologService
+    private readonly HttpClient _httpClient;
+
+    // DI sẽ inject HttpClient
+    public PrologService(HttpClient httpClient)
     {
-        private static readonly object _lock = new();
-        private static bool _isInited = false;
+        _httpClient = httpClient;
+    }
 
-        // Dùng helper hiện có của bạn
-        private readonly PrologHelper _prolog = new PrologHelper();
 
-        public PrologService()
-        {
-            EnsureInit();
-        }
+    // GET danh sách triệu chứng
+    public async Task<List<string>?> LayDanhSachTrieuChungAsync()
+    {
+        return await _httpClient.GetFromJsonAsync<List<string>>("http://localhost:8084/danhsachtrieuchung");
+    }
 
-        private static void EnsureInit()
-        {
-            lock (_lock)
-            {
-                if (!_isInited && !PlEngine.IsInitialized)
-                {
-                    // Khởi tạo yên lặng; thêm tham số đường dẫn .pl nếu cần
-                    PlEngine.Initialize(new[] { "-q" });
-                    _isInited = true;
-                }
-            }
-        }
-
-        public List<string> GetSymptoms()
-        {
-            lock (_lock)
-            {
-                return _prolog.GetSymptoms(); // đã có trong PrologHelper của bạn
-            }
-        }
-
-        // Nếu PrologHelper có hàm Diagnose(List<string>), bọc luôn:
-        public string Diagnose(List<string> s) => "unknown";
-
+    // POST chẩn đoán bệnh → trả List<DiagnosisResult>
+    public async Task<List<Disease>?> ChuanDoanBenhAsync(List<string> trieuChung)
+    {
+        var response = await _httpClient.PostAsJsonAsync("http://localhost:8084/chuandoan", trieuChung);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<Disease>>();
     }
 }

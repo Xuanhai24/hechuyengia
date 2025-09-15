@@ -8,7 +8,7 @@ using hechuyengia.Data;
 
 #nullable disable
 
-namespace HeChuyenGia.Migrations
+namespace hechuyengia.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -21,6 +21,40 @@ namespace HeChuyenGia.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Doctor", b =>
+                {
+                    b.Property<int>("DoctorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoctorId"));
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Specialty")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DoctorId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("Doctors");
+                });
 
             modelBuilder.Entity("hechuyengia.Models.Diagnosis", b =>
                 {
@@ -55,67 +89,45 @@ namespace HeChuyenGia.Migrations
                     b.ToTable("Diagnoses");
                 });
 
-            modelBuilder.Entity("hechuyengia.Models.Disease", b =>
+            modelBuilder.Entity("hechuyengia.Models.DiseaseDiagnose.DiagnoseResult", b =>
                 {
-                    b.Property<int>("DiseaseId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DiseaseId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("DiagnoseDate")
+                        .HasColumnType("datetime");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Diseases")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("DiseaseId");
-
-                    b.ToTable("Diseases");
-                });
-
-            modelBuilder.Entity("hechuyengia.Models.DiseaseSymptom", b =>
-                {
-                    b.Property<int>("DiseaseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SymptomId")
-                        .HasColumnType("int");
-
-                    b.HasKey("DiseaseId", "SymptomId");
-
-                    b.HasIndex("SymptomId");
-
-                    b.ToTable("DiseaseSymptoms");
-                });
-
-            modelBuilder.Entity("hechuyengia.Models.Doctor", b =>
-                {
-                    b.Property<int>("DoctorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoctorId"));
-
-                    b.Property<string>("FullName")
+                    b.Property<string>("DoctorAdvice")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Specialty")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<string>("DoctorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MedicinesAdvice")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.HasKey("DoctorId");
+                    b.Property<string>("Symptoms")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasKey("Id");
 
-                    b.ToTable("Doctors");
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("DiagnoseResults");
                 });
 
             modelBuilder.Entity("hechuyengia.Models.Patient", b =>
@@ -143,53 +155,6 @@ namespace HeChuyenGia.Migrations
                     b.ToTable("Patients");
                 });
 
-            modelBuilder.Entity("hechuyengia.Models.Rule", b =>
-                {
-                    b.Property<int>("RuleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RuleId"));
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("DiseaseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SymptomId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Weight")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.HasKey("RuleId");
-
-                    b.HasIndex("DiseaseId");
-
-                    b.HasIndex("SymptomId");
-
-                    b.ToTable("PrologRules");
-                });
-
-            modelBuilder.Entity("hechuyengia.Models.Symptom", b =>
-                {
-                    b.Property<int>("SymptomId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SymptomId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("SymptomId");
-
-                    b.ToTable("Symptoms");
-                });
-
             modelBuilder.Entity("hechuyengia.Models.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -200,7 +165,7 @@ namespace HeChuyenGia.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -210,18 +175,34 @@ namespace HeChuyenGia.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Doctor", b =>
+                {
+                    b.HasOne("hechuyengia.Models.User", "User")
+                        .WithOne("Doctor")
+                        .HasForeignKey("Doctor", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("hechuyengia.Models.Diagnosis", b =>
                 {
-                    b.HasOne("hechuyengia.Models.Doctor", "Doctor")
+                    b.HasOne("Doctor", "Doctor")
                         .WithMany("Diagnoses")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -238,60 +219,18 @@ namespace HeChuyenGia.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("hechuyengia.Models.DiseaseSymptom", b =>
+            modelBuilder.Entity("hechuyengia.Models.DiseaseDiagnose.DiagnoseResult", b =>
                 {
-                    b.HasOne("hechuyengia.Models.Disease", "Disease")
-                        .WithMany("DiseaseSymptoms")
-                        .HasForeignKey("DiseaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("hechuyengia.Models.Symptom", "Symptom")
-                        .WithMany("DiseaseSymptoms")
-                        .HasForeignKey("SymptomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Disease");
-
-                    b.Navigation("Symptom");
-                });
-
-            modelBuilder.Entity("hechuyengia.Models.Doctor", b =>
-                {
-                    b.HasOne("hechuyengia.Models.User", "User")
-                        .WithOne("Doctor")
-                        .HasForeignKey("hechuyengia.Models.Doctor", "UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("hechuyengia.Models.Rule", b =>
-                {
-                    b.HasOne("hechuyengia.Models.Disease", "Disease")
+                    b.HasOne("hechuyengia.Models.Patient", "Patient")
                         .WithMany()
-                        .HasForeignKey("DiseaseId")
+                        .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("hechuyengia.Models.Symptom", "Symptom")
-                        .WithMany()
-                        .HasForeignKey("SymptomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Disease");
-
-                    b.Navigation("Symptom");
+                    b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("hechuyengia.Models.Disease", b =>
-                {
-                    b.Navigation("DiseaseSymptoms");
-                });
-
-            modelBuilder.Entity("hechuyengia.Models.Doctor", b =>
+            modelBuilder.Entity("Doctor", b =>
                 {
                     b.Navigation("Diagnoses");
                 });
@@ -299,11 +238,6 @@ namespace HeChuyenGia.Migrations
             modelBuilder.Entity("hechuyengia.Models.Patient", b =>
                 {
                     b.Navigation("Diagnoses");
-                });
-
-            modelBuilder.Entity("hechuyengia.Models.Symptom", b =>
-                {
-                    b.Navigation("DiseaseSymptoms");
                 });
 
             modelBuilder.Entity("hechuyengia.Models.User", b =>
